@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <!-- Default SystemUI dimensions -->
+    <!-- SystemUI status bar heights and padding offsets -->
     <dimen name="status_bar_height">36dp</dimen>
     <dimen name="status_bar_header_height">36dp</dimen>
     <dimen name="status_bar_header_height_keyguard">36dp</dimen>
@@ -9,4 +9,15 @@
     <dimen name="quick_qs_total_height">164dp</dimen>
     <dimen name="quick_qs_total_height_with_media">212dp</dimen>
     <dimen name="qs_panel_padding_top">36dp</dimen>
+    
+    <!-- Constraint dimension fixes for QS Panel -->
+    <dimen name="qs_header_height">36dp</dimen>
+    <dimen name="qs_header_row_min_height">36dp</dimen>
+    <dimen name="large_screen_shade_header_height">36dp</dimen>
+    <dimen name="large_screen_shade_header_min_height">36dp</dimen>
+    <dimen name="qs_header_top_padding">36dp</dimen>
+    
+    <!-- Horizontal padding overrides to fix cut-offs on rounded screen edges -->
+    <dimen name="status_bar_padding_start">8dp</dimen>
+    <dimen name="status_bar_padding_end">8dp</dimen>
 </resources>

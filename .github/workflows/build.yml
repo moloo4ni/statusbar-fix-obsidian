@@ -1,0 +1,97 @@
+name: Build and Release Magisk Module
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+jobs:
+  build:
+    name: Build Module
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Set up Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'zulu'
+          java-version: '17'
+
+      - name: Compile and Package Module
+        run: |
+          # 1. Find SDK Tools on Ubuntu runner dynamically
+          BUILD_TOOLS_DIR=$(ls -d $ANDROID_HOME/build-tools/* | sort -V | tail -n 1)
+          ANDROID_JAR=$(ls -d $ANDROID_HOME/platforms/android-* | sort -V | tail -n 1)/android.jar
+          export PATH="$BUILD_TOOLS_DIR:$PATH"
+          
+          # 2. Setup build output
+          OUT_DIR="out"
+          KEYSTORE="out/testkey.keystore"
+          rm -rf "$OUT_DIR"
+          mkdir -p "$OUT_DIR"
+          
+          # 3. Generate keystore for signing
+          keytool -genkeypair -v \
+            -keystore "$KEYSTORE" \
+            -alias androiddebugkey \
+            -keyalg RSA \
+            -keysize 2048 \
+            -validity 10000 \
+            -storepass android \
+            -keypass android \
+            -dname "CN=moloo4ni, O=GitHub, C=US"
+            
+          rm -rf module_template/system/product/overlay/*
+          
+          # 4. Build RROs
+          for TARGET in "android" "systemui"; do
+              COMPILED_RES="out/compiled_$TARGET"
+              UNSIGNED_APK="out/unsigned_$TARGET.apk"
+              ALIGNED_APK="out/aligned_$TARGET.apk"
+              
+              if [ "$TARGET" = "android" ]; then
+                  FOLDER_NAME="StatusbarFixObsidianAndroid"
+              else
+                  FOLDER_NAME="StatusbarFixObsidianSystemUI"
+              fi
+              
+              TARGET_DIR="module_template/system/product/overlay/$FOLDER_NAME"
+              mkdir -p "$COMPILED_RES"
+              mkdir -p "$TARGET_DIR"
+              
+              aapt2 compile --dir "src/$TARGET/res" -o "$COMPILED_RES/"
+              aapt2 link -o "$UNSIGNED_APK" \
+                  -I "$ANDROID_JAR" \
+                  --manifest "src/$TARGET/AndroidManifest.xml" \
+                  -R "$COMPILED_RES"/*.flat \
+                  --no-resource-removal \
+                  --auto-add-overlay
+                  
+              zipalign -f -p 4 "$UNSIGNED_APK" "$ALIGNED_APK"
+              
+              apksigner sign --ks "$KEYSTORE" \
+                  --ks-key-alias androiddebugkey \
+                  --ks-pass pass:android \
+                  --key-pass pass:android \
+                  --out "$TARGET_DIR/$FOLDER_NAME.apk" \
+                  "$ALIGNED_APK"
+          done
+          
+          # 5. Compress Magisk Module
+          cd module_template
+          zip -r ../out/StatusbarFixObsidian-${{ github.ref_name }}.zip ./* > /dev/null
+          cd ..
+
+      - name: Create Release and Upload Asset
+        uses: softprops/action-gh-release@v2
+        with:
+          files: out/StatusbarFixObsidian-${{ github.ref_name }}.zip
+          name: Release ${{ github.ref_name }}
+          draft: false
+          prerelease: false
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
