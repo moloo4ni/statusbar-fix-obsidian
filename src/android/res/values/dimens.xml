@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <!-- Framework default status bar height for launcher and window insets -->
     <dimen name="status_bar_height_default">36dp</dimen>
     <dimen name="status_bar_height_portrait">36dp</dimen>
     <dimen name="status_bar_height_landscape">24dp</dimen>

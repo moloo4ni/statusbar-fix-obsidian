@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <!-- Portrait-specific framework dimensions -->
+    <dimen name="status_bar_height_default">36dp</dimen>
     <dimen name="status_bar_height_portrait">36dp</dimen>
+    <dimen name="status_bar_height_landscape">24dp</dimen>
     <dimen name="status_bar_height">@dimen/status_bar_height_portrait</dimen>
     <dimen name="quick_qs_offset_height">36dp</dimen>
 </resources>

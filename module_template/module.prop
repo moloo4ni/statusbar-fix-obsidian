@@ -1,6 +1,6 @@
 id=statusbar-fix-obsidian
 name=Redmi Note 14 Pro 4G Statusbar Height Fix
-version=1.0
-versionCode=1
+version=1.2
+versionCode=2
 author=moloo4ni
-description=Fixes status bar and Quick Settings layout height for Redmi Note 14 Pro 4G (obsidian) on GSI.
+description=Fixes status bar & QS layout height with burn-in protection for Redmi Note 14 Pro 4G (obsidian) on GSI.
