@@ -1,0 +1,6 @@
+*.apk
+*.flat
+compiled/
+out/
+*.zip
+.DS_Store
