@@ -24,18 +24,40 @@ This repository contains a Magisk / KernelSU / APatch module that corrects the s
 
 ## Local Building
 
-If you wish to compile the module from source on Arch Linux:
+Before compiling, check the `SDK_DIR` variable in the `build.sh` script. By default, it is set to `/opt/android-sdk`. If your Android SDK is installed in a different directory (such as `~/Android/Sdk`), edit that line to point to your actual SDK path.
 
-1. Install the required dependencies from the official repositories and AUR:
-   ```bash
-   sudo pacman -S jdk-openjdk zip android-tools
-   yay -S android-sdk android-sdk-build-tools android-platform
-   ```
-2. Make the build script executable and run it:
-   ```bash
-   chmod +x build.sh
-   ./build.sh
-   ```
+Install the required package dependencies for your distribution:
+
+### Arch Linux
+
+```bash
+sudo pacman -S jdk-openjdk zip android-tools
+yay -S android-sdk android-sdk-build-tools android-platform
+```
+
+### Ubuntu / Debian / Linux Mint
+
+```bash
+sudo apt update
+sudo apt install openjdk-17-jdk zip apksigner zipalign aapt2
+```
+*Note: Make sure to install the Android platform SDK through Android Studio or cmdline-tools, and point `SDK_DIR` in `build.sh` to your local SDK folder (usually `~/Android/Sdk`).*
+
+### Fedora
+
+```bash
+sudo dnf install java-17-openjdk-devel zip apksigner zipalign aapt2
+```
+*Note: Make sure to install the Android platform SDK, and point `SDK_DIR` in `build.sh` to your local SDK folder (usually `~/Android/Sdk` or `/usr/lib/android-sdk`).*
+
+### Compilation
+
+After configuring the dependencies, make the build script executable and run it:
+
+```bash
+chmod +x build.sh
+./build.sh
+```
 The compiled ready-to-flash module will be outputted to the `out/` directory.
 
 ## CI/CD
