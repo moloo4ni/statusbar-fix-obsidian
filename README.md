@@ -2,88 +2,152 @@
 
 [![GPL-3.0](https://img.shields.io/badge/License-GPL--3.0-blue.svg)](LICENSE)
 
-This repository contains a Magisk / KernelSU / APatch module that corrects the status bar height, lock screen layout, and Quick Settings (QS) offsets specifically for the Redmi Note 14 Pro 4G (codename: obsidian) running LineageOS 23.0 GSI or other Android 13+ GSIs.
+[English](#english) | [Русский](#russian)
 
-## Features
+---
 
-- **Dual RRO Targets:** Separated resource overlays targeting both the Android Framework (`android`) and SystemUI (`com.android.systemui`).
-- **Notch Killer:** Overrides the physical SVG display cutout path (`config_mainBuiltInDisplayCutout`) to empty, removing system-enforced minimum height constraints. This allows the status bar and QS panel to shrink to a clean 36dp.
-- **AMOLED Burn-In Protection:** Enables native SystemUI pixel-shifting (`config_statusBarBurnInProtection`), which subtly moves status bar icons (clock, battery, signals) every 60 seconds.
-- **Priority Overrides:** Uses `values-port` resource directories to guarantee the system prioritizes these overrides over default GSI portrait configurations.
-- **GSI Conflict Resolution:** The included background `service.sh` script automatically disables conflicting built-in GSI overlays and resets runtime `treble_app` properties upon boot.
+<a name="english"></a>
+## English
 
-## Installation
+Magisk / KernelSU / APatch module that corrects the status bar height, lock screen layout, and Quick Settings (QS) offsets on the Redmi Note 14 Pro 4G (codename: obsidian) running LineageOS GSI or other Android 13+ GSIs.
 
-1. Go to the **Releases** section of this repository and download the latest zip archive.
-2. Flash the zip file using Magisk, KernelSU, or APatch.
-3. Open the **Phh Treble Settings** app on your device, navigate to **Misc features**, and reset the following parameters to `-1` (or clear them):
+### Features
+
+- **Dual RRO overlays** -- independent resource overlays for Android Framework (`android`) and SystemUI (`com.android.systemui`).
+- **Notch killer** -- overrides the SVG display cutout path to empty, removing system-enforced minimum height constraints. Status bar and QS panel shrink to a clean 36 dp.
+- **AMOLED burn-in protection** -- enables native SystemUI pixel-shifting (`config_statusBarBurnInProtection`). Status bar icons (clock, battery, signals) shift slightly every 60 seconds.
+- **Priority overrides** -- uses `values-port` resource directories so the system prioritises these overrides over default GSI portrait values.
+- **GSI conflict resolution** -- the included `service.sh` automatically disables conflicting built-in GSI overlays and resets Phh Treble runtime properties on every boot.
+
+### Installation
+
+1. Download the latest zip from the [Releases](https://github.com/moloo4ni/statusbar-fix-obsidian/releases) page.
+2. Flash it in Magisk, KernelSU, or APatch.
+3. Open **Phh Treble Settings** -> **Misc features** and reset these parameters to `-1` (or clear them):
    - `Set rounded corners diameter`
    - `Set forced/faked rounded corners diameter`
    - `Set status bar top padding`
    - `Set status bar start padding`
    - `Set status bar end padding`
-4. Reboot your device to apply the changes cleanly.
+4. Reboot.
 
-## Local Building
+### Building from source
 
-Before compiling, check the `SDK_DIR` variable in the `build.sh` script. By default, it is set to `/opt/android-sdk`. If your Android SDK is installed in a different directory (such as `~/Android/Sdk`), edit that line to point to your actual SDK path.
-
-The build script automatically reads the module version from `module_template/module.prop` and uses it in the output zip filename, so you only need to update the version in one place.
-
-Install the required package dependencies for your distribution:
-
-### Arch Linux
+`build.sh` auto-detects the Android SDK via `$ANDROID_HOME`, `$ANDROID_SDK_ROOT`, or falls back to `/opt/android-sdk`. You can override it:
 
 ```bash
-sudo pacman -S jdk-openjdk zip android-tools
-yay -S android-sdk android-sdk-build-tools android-platform
+SDK_DIR=~/Android/Sdk ./build.sh
 ```
 
-### Ubuntu / Debian / Linux Mint
+The version is read from `module_template/module.prop`, so the output zip always matches the declared module version.
 
-```bash
-sudo apt update
-sudo apt install openjdk-17-jdk zip apksigner zipalign aapt2
-```
-*Note: Make sure to install the Android platform SDK through Android Studio or cmdline-tools, and point `SDK_DIR` in `build.sh` to your local SDK folder (usually `~/Android/Sdk`).*
+#### Dependencies
 
-### Fedora
+| Distro | Command |
+|--------|---------|
+| Arch Linux | `sudo pacman -S jdk-openjdk zip android-tools`<br>`yay -S android-sdk android-sdk-build-tools android-platform` |
+| Ubuntu / Debian | `sudo apt install openjdk-17-jdk zip apksigner zipalign aapt2` |
+| Fedora | `sudo dnf install java-17-openjdk-devel zip apksigner zipalign aapt2` |
 
-```bash
-sudo dnf install java-17-openjdk-devel zip apksigner zipalign aapt2
-```
-*Note: Make sure to install the Android platform SDK, and point `SDK_DIR` in `build.sh` to your local SDK folder (usually `~/Android/Sdk` or `/usr/lib/android-sdk`).*
-
-### Compilation
-
-After configuring the dependencies, make the build script executable and run it:
+#### Compile
 
 ```bash
 chmod +x build.sh
 ./build.sh
 ```
-The compiled ready-to-flash module will be outputted to the `out/` directory.
 
-## CI/CD
+The flashable zip appears in `out/`.
 
-This repository is configured with GitHub Actions (see `.github/workflows/build.yml`). Pushing a tag starting with `v` (e.g., `v1.2`) will automatically trigger the build pipeline, compile both RRO packages, generate the flashable zip archive, and publish a new GitHub Release with the artifact attached.
-
-## Module Structure
+### Module structure
 
 ```
 src/
-├── android/res/         # Framework RRO resources (dimens, cutout config)
-├── systemui/res/        # SystemUI RRO resources (dimens, burn-in config)
-module_template/         # Magisk/KSU/APatch module skeleton
-├── module.prop          # Module metadata (id, name, version, author)
-├── service.sh           # Boot-time cleanup and overlay enforcement
-└── system/product/overlay/  # Compiled RRO APKs placed here by build.sh
+  android/res/        Framework RRO (dimens, cutout config)
+  systemui/res/       SystemUI RRO (dimens, burn-in config)
+module_template/
+  module.prop         Module metadata
+  service.sh          Boot-time conflict cleanup
+  system/product/overlay/   Compiled RRO APKs (populated by build.sh)
 ```
 
-## Reporting Issues
+### CI/CD
 
-If you encounter problems or have suggestions, please [open an issue](https://github.com/moloo4ni/statusbar-fix-obsidian/issues) on GitHub. Include your device model, ROM/GSI variant, and a brief description of the issue.
+Pushing a `v*` tag triggers GitHub Actions, which builds the module and publishes a release with the zip attached.
 
-## License
+### License
 
-This project is licensed under the GNU General Public License v3.0 - see the [LICENSE](LICENSE) file for details.
+[GNU General Public License v3.0](LICENSE)
+
+---
+
+<a name="russian"></a>
+## Русский
+
+Модуль для Magisk / KernelSU / APatch, исправляющий высоту строки состояния (status bar), отступы панели быстрых настроек (Quick Settings) и экрана блокировки на Redmi Note 14 Pro 4G (obsidian) под управлением LineageOS GSI или других Android 13+ GSI.
+
+### Возможности
+
+- **Два RRO-оверлея** -- независимое изменение ресурсов Android Framework (`android`) и SystemUI (`com.android.systemui`).
+- **Notch Killer** -- обнуляет SVG-путь выреза камеры, убирая системные ограничения минимальной высоты. Статусбар и шторка сжимаются до 36 dp.
+- **Защита AMOLED от выгорания** -- включает встроенный механизм pixel-shifting в SystemUI (`config_statusBarBurnInProtection`). Иконки (часы, сеть, батарея) незаметно смещаются каждые 60 секунд.
+- **Приоритет в портретной ориентации** -- ресурсы в `values-port` переопределяют стандартные GSI-значения в портретном режиме.
+- **Автоматическое разрешение конфликтов** -- скрипт `service.sh` отключает конфликтующие оверлеи GSI и сбрасывает runtime-свойства Phh Treble при каждой загрузке.
+
+### Установка
+
+1. Скачайте последний zip-архив из [Releases](https://github.com/moloo4ni/statusbar-fix-obsidian/releases).
+2. Установите через Magisk, KernelSU или APatch.
+3. Откройте **Phh Treble Settings** -> **Misc features** и сбросьте параметры (значение `-1` или очистить):
+   - `Set rounded corners diameter`
+   - `Set forced/faked rounded corners diameter`
+   - `Set status bar top padding`
+   - `Set status bar start padding`
+   - `Set status bar end padding`
+4. Перезагрузите устройство.
+
+### Сборка из исходников
+
+`build.sh` автоматически определяет Android SDK через `$ANDROID_HOME`, `$ANDROID_SDK_ROOT` или использует `/opt/android-sdk` по умолчанию. Можно явно указать путь:
+
+```bash
+SDK_DIR=~/Android/Sdk ./build.sh
+```
+
+Версия модуля читается из `module_template/module.prop` -- имя zip-архива всегда соответствует версии.
+
+#### Зависимости
+
+| Дистрибутив | Команда |
+|-------------|---------|
+| Arch Linux | `sudo pacman -S jdk-openjdk zip android-tools`<br>`yay -S android-sdk android-sdk-build-tools android-platform` |
+| Ubuntu / Debian | `sudo apt install openjdk-17-jdk zip apksigner zipalign aapt2` |
+| Fedora | `sudo dnf install java-17-openjdk-devel zip apksigner zipalign aapt2` |
+
+#### Компиляция
+
+```bash
+chmod +x build.sh
+./build.sh
+```
+
+Готовый zip-файл появится в папке `out/`.
+
+### Структура модуля
+
+```
+src/
+  android/res/        RRO для фреймворка (dimens, конфиг выреза)
+  systemui/res/       RRO для SystemUI (dimens, защита экрана)
+module_template/
+  module.prop         Метаданные модуля
+  service.sh          Сброс конфликтов при загрузке
+  system/product/overlay/   Скомпилированные RRO-APK (создаются build.sh)
+```
+
+### CI/CD
+
+При пуше тега вида `v*` GitHub Actions автоматически собирает модуль и публикует релиз с zip-архивом.
+
+### Лицензия
+
+[GNU General Public License v3.0](LICENSE)
