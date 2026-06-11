@@ -1,6 +1,8 @@
 *.apk
 *.flat
+*.idsig
 compiled/
 out/
 *.zip
 .DS_Store
+*.keystore

@@ -27,6 +27,10 @@ KEYSTORE="out/testkey.keystore"
 rm -rf "$OUT_DIR"
 mkdir -p "$OUT_DIR"
 
+# Read version from module.prop
+MODULE_VER=$(grep '^version=' module_template/module.prop | cut -d= -f2)
+ZIP_NAME="StatusbarFixObsidian-v${MODULE_VER}.zip"
+
 # Generate local test signing key
 if [ ! -f "$KEYSTORE" ]; then
     keytool -genkeypair -v \
@@ -85,7 +89,7 @@ done
 
 # Zip the Magisk/KSU/APatch module
 cd module_template
-zip -r ../out/StatusbarFixObsidian-v1.1.zip ./* > /dev/null
+zip -r "../out/$ZIP_NAME" ./* > /dev/null
 cd ..
 
-echo "Build complete: out/StatusbarFixObsidian-v1.1.zip"
+echo "Build complete: out/$ZIP_NAME"

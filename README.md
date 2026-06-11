@@ -26,6 +26,8 @@ This repository contains a Magisk / KernelSU / APatch module that corrects the s
 
 Before compiling, check the `SDK_DIR` variable in the `build.sh` script. By default, it is set to `/opt/android-sdk`. If your Android SDK is installed in a different directory (such as `~/Android/Sdk`), edit that line to point to your actual SDK path.
 
+The build script automatically reads the module version from `module_template/module.prop` and uses it in the output zip filename, so you only need to update the version in one place.
+
 Install the required package dependencies for your distribution:
 
 ### Arch Linux
@@ -62,7 +64,23 @@ The compiled ready-to-flash module will be outputted to the `out/` directory.
 
 ## CI/CD
 
-This repository is configured with GitHub Actions. Pushing a tag starting with `v` (e.g., `v1.2`) will automatically trigger the build pipeline, compile both RRO packages, generate the flashable zip archive, and publish a new GitHub Release.
+This repository is configured with GitHub Actions (see `.github/workflows/build.yml`). Pushing a tag starting with `v` (e.g., `v1.2`) will automatically trigger the build pipeline, compile both RRO packages, generate the flashable zip archive, and publish a new GitHub Release with the artifact attached.
+
+## Module Structure
+
+```
+src/
+├── android/res/         # Framework RRO resources (dimens, cutout config)
+├── systemui/res/        # SystemUI RRO resources (dimens, burn-in config)
+module_template/         # Magisk/KSU/APatch module skeleton
+├── module.prop          # Module metadata (id, name, version, author)
+├── service.sh           # Boot-time cleanup and overlay enforcement
+└── system/product/overlay/  # Compiled RRO APKs placed here by build.sh
+```
+
+## Reporting Issues
+
+If you encounter problems or have suggestions, please [open an issue](https://github.com/moloo4ni/statusbar-fix-obsidian/issues) on GitHub. Include your device model, ROM/GSI variant, and a brief description of the issue.
 
 ## License
 
