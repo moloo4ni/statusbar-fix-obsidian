@@ -1,7 +1,7 @@
 #!/bin/bash
 set -e
 
-SDK_DIR="/opt/android-sdk"
+SDK_DIR="${SDK_DIR:-/opt/android-sdk}"
 
 if [ ! -d "$SDK_DIR" ]; then
     echo "Error: Android SDK not found at $SDK_DIR."
