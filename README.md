@@ -1,5 +1,7 @@
 # Redmi Note 14 Pro 4G (obsidian) Status Bar & QS Height Fix
 
+[![GPL-3.0](https://img.shields.io/badge/License-GPL--3.0-blue.svg)](LICENSE)
+
 This repository contains a Magisk / KernelSU / APatch module that corrects the status bar height, lock screen layout, and Quick Settings (QS) offsets specifically for the Redmi Note 14 Pro 4G (codename: obsidian) running LineageOS 23.0 GSI or other Android 13+ GSIs.
 
 ## Features
