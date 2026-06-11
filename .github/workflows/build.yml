@@ -23,8 +23,6 @@ jobs:
 
       - name: Build Module via build.sh
         run: ./build.sh
-        env:
-          SDK_DIR: ${{ env.ANDROID_HOME }}
 
       - name: Upload Release Asset
         uses: softprops/action-gh-release@v2
